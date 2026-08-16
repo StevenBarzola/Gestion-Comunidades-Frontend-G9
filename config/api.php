@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // URL base de tu backend en Django (NOTA: Cambiarla por la de tu CodeSpace)
-define('API_BASE_URL', 'https://expert-fiesta-v6rwv555rx7f549-8003.app.github.dev/api/');
+define('API_BASE_URL', 'https://upgraded-adventure-4jwvx9wq9r67h7qrv-8000.app.github.dev/api/');
 
 // Función helper para consumir la API fácilmente usando cURL
 function callAPI($method, $endpoint, $data = false) {
@@ -27,6 +27,11 @@ function callAPI($method, $endpoint, $data = false) {
             break;
         case "PUT":
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            if ($data) curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+            break;
+        //Aumento del caso 'DELETE'
+        case "DELETE":
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             if ($data) curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
             break;
         default:
