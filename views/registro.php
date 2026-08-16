@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Clubes ESPOL</title>
+    <title>Registro</title>
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -28,7 +28,7 @@
 
     <div class="card login-card">
         <i class="fa-solid fa-user-plus fa-4x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
-        <h2 style="color: var(--primary-color); margin-bottom: 25px;">Crear Cuenta</h2>
+        <h2 style="color: var(--primary-color); margin-bottom: 25px;">Plataforma de Clubes - Registro</h2>
 
         <?php
             if (isset($_SESSION['error_registro'])) {

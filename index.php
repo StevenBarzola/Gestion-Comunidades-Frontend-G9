@@ -13,7 +13,7 @@ if (isset($_SESSION['api_token'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Clubes ESPOL</title>
+    <title>Iniciar Sesión</title>
     <!-- Importamos los estilos base -->
     <link rel="stylesheet" href="assets/style.css">
     <!-- Para los iconos -->
@@ -67,7 +67,7 @@ if (isset($_SESSION['api_token'])) {
     <div class="card login-card">
         <i class="fa-solid fa-users-rectangle fa-4x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
         
-        <h2 style="color: var(--primary-color); margin-bottom: 25px;">Plataforma de Clubes</h2>
+        <h2 style="color: var(--primary-color); margin-bottom: 25px;">Plataforma de Clubes - Login</h2>
 
         <?php
         if (isset($_SESSION['error_login'])) {
