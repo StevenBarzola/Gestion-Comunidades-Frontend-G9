@@ -76,6 +76,13 @@ if (isset($_SESSION['api_token'])) {
         }
         ?>
 
+        <?php
+        if (isset($_SESSION['mensaje_exito'])) {
+            echo '<div style="background-color: #d4edda; color: var(--success); padding: 10px; border-radius: var(--border-radius); margin-bottom: 20px; font-size: 14px; border: 1px solid #c3e6cb;"><i class="fa-solid fa-circle-check"></i> ' . $_SESSION['mensaje_exito'] . '</div>';
+            unset($_SESSION['mensaje_exito']);
+        }
+        ?>
+
         <form action="procesos/login_process.php" method="POST">
             <div class="form-group">
                 <label for="username"><i class="fa-solid fa-user"></i> Usuario:</label>
@@ -91,6 +98,9 @@ if (isset($_SESSION['api_token'])) {
                 Ingresar <i class="fa-solid fa-arrow-right-to-bracket"></i>
             </button>
         </form>
+        <div style="margin-top: 20px;">
+            <a href="views/registro.php" style="color: var(--text-muted); text-decoration: none; font-size: 14px;">¿No tienes cuenta? <strong style="color: var(--primary-color);">Regístrate aquí</strong></a>
+        </div>
     </div>
 
 </body>

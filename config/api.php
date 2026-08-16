@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// URL base de tu backend en Django (Cambiarla por la de tu CodeSpace)
+// URL base de tu backend en Django (NOTA: Cambiarla por la de tu CodeSpace)
 define('API_BASE_URL', 'https://expert-fiesta-v6rwv555rx7f549-8003.app.github.dev/api/');
 
 // Función helper para consumir la API fácilmente usando cURL
@@ -34,7 +34,7 @@ function callAPI($method, $endpoint, $data = false) {
     }
 
     curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers); // <- Aquí enviamos las cabeceras
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
     $result = curl_exec($curl);
