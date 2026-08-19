@@ -13,11 +13,16 @@
 <body>
     <nav style="background: var(--primary-color); color: white; padding: 15px 0;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <h2><i class="fa-solid fa-layer-group"></i> Plataforma de Clubes</h2>
-            <div>
-                <a href="directorio.php" style="color: white; margin-right: 15px;"><i class="fa-solid fa-address-book"></i> Directorio</a>
-                <a href="inventario.php" style="color: white; margin-right: 15px;"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
-                <a href="asambleas.php" style="color: white;"><i class="fa-solid fa-check-to-slot"></i> Asambleas</a>
+            <h2 style="margin: 0;"><i class="fa-solid fa-layer-group"></i> Plataforma de Clubes</h2>
+            <div style="display: flex; align-items: center;">
+                <a href="directorio.php" style="color: white; text-decoration: none; margin-right: 15px;"><i class="fa-solid fa-address-book"></i> Directorio</a>
+                <a href="inventario.php" style="color: white; text-decoration: none; margin-right: 15px;"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
+                <a href="asambleas.php" style="color: white; text-decoration: none; margin-right: 25px;"><i class="fa-solid fa-check-to-slot"></i> Asambleas</a>
+                
+                <!-- LOGOUT -->
+                <a href="../auth/logout.php" style="background-color: #dc3545; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; display: inline-block;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Salir
+                </a>
             </div>
         </div>
     </nav>

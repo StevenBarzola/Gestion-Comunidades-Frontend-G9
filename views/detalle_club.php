@@ -2,13 +2,11 @@
 require_once '../auth/session_check.php';
 require_once '../config/api.php';
 
-// Validar que venga un ID en la URL
 if (!isset($_GET['id'])) {
     header('Location: directorio.php');
     exit();
 }
 
-// Consumir el club específico
 $id_club = $_GET['id'];
 $club = callAPI('GET', "clubes/$id_club/");
 
@@ -21,6 +19,15 @@ if (isset($club['detail']) && $club['detail'] == 'No encontrado.') {
 <?php include '../includes/header.php'; ?>
 
 <div class="card" style="max-width: 800px; margin: 0 auto; padding: 30px;">
+    
+    <!-- Alertas -->
+    <?php if (isset($_SESSION['mensaje_membresia'])): ?>
+        <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+            <i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($_SESSION['mensaje_membresia']); ?>
+            <?php unset($_SESSION['mensaje_membresia']); ?>
+        </div>
+    <?php endif; ?>
+
     <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--primary-color); padding-bottom: 15px; margin-bottom: 20px;">
         <div>
             <h2 style="color: var(--primary-color); margin: 0 0 10px 0;">
@@ -31,10 +38,13 @@ if (isset($club['detail']) && $club['detail'] == 'No encontrado.') {
             </span>
         </div>
         
-        <!-- Botón deshabilitado intencionalmente por alcance del sprint -->
-        <button class="btn" style="background-color: var(--text-muted); cursor: not-allowed;" title="Funcionalidad programada para la siguiente fase">
-            <i class="fa-solid fa-user-plus"></i> Unirse al Club
-        </button>
+        <!-- Botón de Inscripción Funcional -->
+        <form action="../procesos/membresia_process.php" method="POST" style="margin: 0;">
+            <input type="hidden" name="club_id" value="<?= htmlspecialchars($id_club); ?>">
+            <button type="submit" class="btn" style="background-color: var(--primary-color);">
+                <i class="fa-solid fa-user-plus"></i> Unirse al Club
+            </button>
+        </form>
     </div>
 
     <div style="margin-bottom: 20px;">
@@ -43,11 +53,47 @@ if (isset($club['detail']) && $club['detail'] == 'No encontrado.') {
         </p>
     </div>
 
-    <div>
+    <div style="margin-bottom: 30px;">
         <h4 style="color: var(--text-dark); margin-bottom: 10px;">Sobre nosotros</h4>
         <p style="line-height: 1.6; color: #555; font-size: 15px;">
-            <?= nl2br(htmlspecialchars($club['descripcion'] ?? 'Este club aún no ha proporcionado una descripción.')); ?>
+            <?= nl2br(htmlspecialchars($club['descripcion'] ?? 'Sin descripción.')); ?>
         </p>
+    </div>
+
+    <!-- Nueva Sección: Lista de Miembros -->
+    <div>
+        <h4 style="color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+            <i class="fa-solid fa-users-viewfinder"></i> Integrantes de la Agrupación
+        </h4>
+        
+        <?php if (isset($club['miembros']) && is_array($club['miembros']) && count($club['miembros']) > 0): ?>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 15px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px;">Usuario</th>
+                        <th style="padding: 10px;">Rol asignado</th>
+                        <th style="padding: 10px;">Fecha de ingreso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($club['miembros'] as $miembro): ?>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px;"><strong><?= htmlspecialchars($miembro['usuario_username'] ?? 'Anónimo'); ?></strong></td>
+                            <td style="padding: 10px;">
+                                <span style="background-color: #e9ecef; color: #495057; padding: 4px 8px; border-radius: 4px; font-size: 12px; text-transform: uppercase;">
+                                    <?= htmlspecialchars($miembro['rol'] ?? 'Aspirante'); ?>
+                                </span>
+                            </td>
+                            <td style="padding: 10px; color: var(--text-muted);"><?= htmlspecialchars(date('d/m/Y', strtotime($miembro['fecha_ingreso'] ?? 'now'))); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p style="color: var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">
+                Aún no hay miembros registrados en este club. ¡Sé el primero en unirte!
+            </p>
+        <?php endif; ?>
     </div>
 
     <div style="margin-top: 30px; text-align: left;">
