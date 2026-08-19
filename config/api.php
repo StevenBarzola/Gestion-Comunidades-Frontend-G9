@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // URL base de tu backend en Django (NOTA: Cambiarla por la de tu CodeSpace)
-define('API_BASE_URL', 'http://127.0.0.1:8000/api/');
+define('API_BASE_URL', 'https://ominous-xylophone-wrrvj5ppqp9725jwq-8003.app.github.dev/api/');
 
 // Función helper para consumir la API fácilmente usando cURL
 function callAPI($method, $endpoint, $data = false) {
@@ -43,7 +43,7 @@ function callAPI($method, $endpoint, $data = false) {
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
     $result = curl_exec($curl);
-    #curl_close($curl);
+    curl_close($curl);
     return json_decode($result, true);
 }
 ?>
