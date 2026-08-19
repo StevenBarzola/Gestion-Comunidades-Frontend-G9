@@ -59,7 +59,7 @@ $clubes = callAPI('GET', 'clubes/');
                     </p>
                 </div>
                 <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; text-align: right;">
-                    <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px; font-weight: bold;">
+                    <a href="detalle_club.php?id=<?= $club['id'] ?>" style="color: var(--primary-color); text-decoration: none; font-size: 14px; font-weight: bold;">
                         Ver detalles <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
