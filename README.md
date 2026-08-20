@@ -1,33 +1,47 @@
 # Gestion-Comunidades-Frontend-G9
 
-## Estructura del Proyecto (Frontend)
+## Requisitos previos
+- PHP 7.4 o superior instalado
+- El backend (Django) corriendo localmente (ver README del backend)
 
-```text
-/
-├── assets/                 # Archivos estáticos
-│   └── style.css           # Estilos base y variables compartidas del proyecto
-│
-├── config/                 # Configuraciones globales
-│   └── api.php             # Archivo base para el consumo dinámico de la API (cURL)
-│
-├── includes/               # Componentes visuales reutilizables
-│   ├── header.php          # Etiquetas <head>, importación de estilos y barra de navegación
-│   └── footer.php          # Cierre de etiquetas HTML y carga de scripts
-│
-├── auth/                   # Manejo dinámico de sesiones
-│   ├── session_check.php   # Script validador para proteger rutas privadas
-│   └── logout.php          # Destrucción de la sesión HTTP y redirección
-│
-├── procesos/               # Lógica del servidor (Consumo de API y redirecciones)
-│   ├── login_process.php   # Autenticación de usuarios
-│   ├── club_process.php    # (Steven) Procesamiento de módulos de Clubes y Membresías
-│   ├── inventario_process.php # (Julio) Procesamiento del registro de bienes tecnológicos
-│   └── voto_process.php    # (Isaac) Validación y emisión del voto único
-│
-├── views/                  # Vistas principales de la aplicación (Interfaces)
-│   ├── directorio.php      # (Steven) Catálogo público de agrupaciones
-│   ├── inventario.php      # (Julio) Panel administrativo de control de ítems
-│   ├── asambleas.php       # (Isaac) Listado de elecciones activas y cerradas
-│   └── votar.php           # (Isaac) Papeleta interactiva de votación
-│
-└── index.php               # Punto de entrada principal
+## 1. Clonar el repositorio
+```bash
+git clone <URL_DEL_REPOSITORIO_FRONTEND>
+cd <carpeta-frontend>
+```
+
+## 2. Configurar la URL del backend
+Este frontend consume la API poniendo la URL del backend directamente en un archivo de configuración.
+
+Abrir el archivo:
+```
+config/api.php
+```
+
+Y reemplazar la URL actual (la que apuntaba al Codespace) por la del backend en local:
+```php
+// Antes (Codespace)
+define('API_BASE_URL', 'https://ominous-xylophone-wrrvj5ppqp9725jwq-[puerto].app.github.dev/api/');
+
+// Ahora (local)
+define('API_BASE_URL', 'http://localhost:[puerto]/api/');
+```
+
+## 3. Levantar el servidor local de PHP
+Desde la carpeta del proyecto:
+```bash
+php -S localhost:[puerto]
+```
+
+## 4. Probar la aplicación
+Abrir en el navegador:
+```
+http://localhost:[puerto]
+```
+
+## Resumen del flujo completo para el profesor
+1. Levantar el backend (`python manage.py runserver`) → puerto 8000.
+2. Confirmar que `http://localhost:8000/api/...` muestra datos en el navegador.
+3. Editar la URL de la API en el frontend PHP para que apunte a `http://localhost:8000/api`.
+4. Levantar el frontend (`php -S localhost:8080`).
+5. Probar la aplicación en `http://localhost:8080`.
