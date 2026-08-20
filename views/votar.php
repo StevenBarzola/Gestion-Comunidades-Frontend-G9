@@ -78,26 +78,31 @@ if (empty($asamblea['activa'])) {
             <form action="../procesos/voto_process.php" method="POST">
                 <input type="hidden" name="asamblea_id" value="<?= (int) $asamblea['id']; ?>">
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 25px;">
                     <?php foreach ($opciones as $op): ?>
-                        <label class="card" style="cursor: pointer; text-align: center; display: block; margin-bottom: 0;">
-                            <input type="radio" name="opcion_id" value="<?= (int) $op['id']; ?>" required style="margin-bottom: 10px;">
+                        
+                        <!-- Flexbox interno para alinear el radio button, el icono y los textos -->
+                        <label class="card" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin-bottom: 0; min-width: 220px; max-width: 300px; flex: 1;">
+                            <input type="radio" name="opcion_id" value="<?= (int) $op['id']; ?>" required style="margin-bottom: 15px; transform: scale(1.2);">
                             <div><i class="fa-solid fa-users fa-2x" style="color: var(--secondary-color);"></i></div>
                             <strong style="display: block; margin-top: 10px;">
                                 <?= htmlspecialchars($op['nombre_lista']); ?>
                             </strong>
                             <?php if (!empty($op['descripcion'])): ?>
-                                <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">
+                                <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">
                                     <?= htmlspecialchars($op['descripcion']); ?>
                                 </p>
                             <?php endif; ?>
                         </label>
+                        
                     <?php endforeach; ?>
                 </div>
 
-                <button type="submit" class="btn">
-                    <i class="fa-solid fa-check-to-slot"></i> Emitir Voto
-                </button>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn">
+                        <i class="fa-solid fa-check-to-slot"></i> Emitir Voto
+                    </button>
+                </div>
             </form>
         <?php endif; ?>
 
