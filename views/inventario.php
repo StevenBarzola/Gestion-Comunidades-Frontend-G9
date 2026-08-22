@@ -2,6 +2,7 @@
 // 1. Proteger la ruta y cargar configuración
 require_once '../auth/session_check.php';
 require_once '../config/api.php';
+require_once '../includes/permisos.php';
 
 // Capturar los filtros desde los parámetros GET de la URL
 $filtroEstado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
@@ -23,6 +24,15 @@ $clubes     = callAPI('GET', 'clubes/');
 // Asegurar que las variables sean arrays
 $inventario = is_array($inventario) ? $inventario : [];
 $clubes     = is_array($clubes) ? $clubes : [];
+
+// El inventario está aislado por club: solo se ve el de las agrupaciones a las
+// que se pertenece. Por eso los selectores solo ofrecen esos clubes, evitando
+// registrar un ítem en un club ajeno que luego no sería visible.
+$perfil = obtenerPerfil();
+if (empty($perfil['is_staff'])) {
+    $misClubesIds = array_map(fn($m) => $m['club_id'], $perfil['membresias']);
+    $clubes = array_values(array_filter($clubes, fn($c) => in_array($c['id'], $misClubesIds)));
+}
 
 // Mapeo rápido de ID de club a nombre
 $mapaClubes = [];

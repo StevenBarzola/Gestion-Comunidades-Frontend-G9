@@ -1,14 +1,20 @@
 <?php
-    // 1. Inicializar la sesión
+// Cierre de sesion: destruye la sesion PHP (token incluido) y regresa al login.
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
 
-    // 2. Liberar todas las variables de sesión actuales (incluyendo el token)
-    session_unset();
+// Vaciar y destruir la sesion del servidor
+$_SESSION = [];
+session_unset();
+session_destroy();
 
-    // 3. Destruir la sesión por completo en el servidor
-    session_destroy();
+// Eliminar tambien la cookie de sesion del navegador
+if (ini_get('session.use_cookies')) {
+    $p = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+}
 
-    // 4. Redirigir mediante cabecera a la pantalla de Login (index.php)
-    header('Location: ../index.php');
-    exit();
-?>
+header('Location: ../index.php');
+exit();

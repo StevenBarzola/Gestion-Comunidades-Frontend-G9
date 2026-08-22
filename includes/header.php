@@ -18,7 +18,13 @@
                 <a href="directorio.php" style="color: white; text-decoration: none; margin-right: 15px;"><i class="fa-solid fa-address-book"></i> Directorio</a>
                 <a href="inventario.php" style="color: white; text-decoration: none; margin-right: 15px;"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
                 <a href="asambleas.php" style="color: white; text-decoration: none; margin-right: 25px;"><i class="fa-solid fa-check-to-slot"></i> Asambleas</a>
-                
+
+                <?php if (!empty($_SESSION['username'])): ?>
+                    <span style="margin-right: 15px; opacity: 0.85; font-size: 14px;">
+                        <i class="fa-solid fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
+                    </span>
+                <?php endif; ?>
+
                 <!-- LOGOUT -->
                 <a href="../auth/logout.php" style="background-color: #dc3545; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; display: inline-block;">
                     <i class="fa-solid fa-right-from-bracket"></i> Salir

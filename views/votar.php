@@ -12,35 +12,27 @@ if (!isset($asamblea['id'])) {
     exit();
 }
 
-// El endpoint de opciones-voto no filtra por asamblea, así que se filtra aquí en PHP
-$todasOpciones = callAPI('GET', 'opciones-voto/');
-$todasOpciones = is_array($todasOpciones) ? $todasOpciones : [];
-$opciones = array_values(array_filter($todasOpciones, function ($o) use ($asambleaId) {
-    return isset($o['asamblea']) && intval($o['asamblea']) === $asambleaId;
-}));
+// Opciones de la asamblea. El backend ya soporta el filtro ?asamblea=, así que
+// no hace falta descargar todas las opciones del sistema y filtrarlas en PHP.
+$opciones = callAPI('GET', 'opciones-voto/', ['asamblea' => $asambleaId]);
+$opciones = is_array($opciones) ? $opciones : [];
 
-// Si la asamblea está cerrada, tabulamos los resultados a partir de /api/votos/
+// Verificar si el usuario actual ya emitió su voto en esta asamblea.
+// GET /api/votos/ solo devuelve los votos del propio solicitante, por lo que
+// esta consulta no revela información de terceros.
+$misVotos = callAPI('GET', 'votos/', ['asamblea' => $asambleaId]);
+$yaVoto = is_array($misVotos) && count($misVotos) > 0;
+
+// Si la asamblea está cerrada, el conteo lo calcula el backend con
+// annotate(Count(...)). El frontend solo presenta el resultado ya agregado.
 $resultados = [];
 $totalVotos = 0;
 
 if (empty($asamblea['activa'])) {
-    $todosVotos = callAPI('GET', 'votos/');
-    $todosVotos = is_array($todosVotos) ? $todosVotos : [];
-    $votosAsamblea = array_filter($todosVotos, function ($v) use ($asambleaId) {
-        return isset($v['asamblea']) && intval($v['asamblea']) === $asambleaId;
-    });
-
-    foreach ($opciones as $op) {
-        $resultados[$op['id']] = [
-            'nombre_lista' => $op['nombre_lista'],
-            'votos' => 0,
-        ];
-    }
-    foreach ($votosAsamblea as $v) {
-        if (isset($resultados[$v['opcion']])) {
-            $resultados[$v['opcion']]['votos']++;
-            $totalVotos++;
-        }
+    $data = callAPI('GET', 'asambleas/' . $asambleaId . '/resultados/');
+    if (isset($data['resultados']) && is_array($data['resultados'])) {
+        $resultados  = $data['resultados'];
+        $totalVotos  = intval($data['total_votos'] ?? 0);
     }
 }
 ?>
@@ -59,7 +51,7 @@ if (empty($asamblea['activa'])) {
     </h2>
     <p style="color: var(--text-muted); margin-bottom: 20px;">
         Estado: <strong><?= !empty($asamblea['activa']) ? 'Activa' : 'Cerrada'; ?></strong>
-        &nbsp;|&nbsp; Cierra: <?= htmlspecialchars($asamblea['fecha_cierre'] ?? 'No definida'); ?>
+        &nbsp;|&nbsp; Cierra: <?= !empty($asamblea['fecha_cierre']) ? htmlspecialchars(date('d/m/Y H:i', strtotime($asamblea['fecha_cierre']))) : 'No definida'; ?>
     </p>
 
     <?php if (isset($_SESSION['mensaje_error'])): ?>
@@ -72,7 +64,13 @@ if (empty($asamblea['activa'])) {
     <?php if (!empty($asamblea['activa'])): ?>
 
         <!-- ===================== PAPELETA DE VOTACIÓN ===================== -->
-        <?php if (empty($opciones)): ?>
+        <?php if ($yaVoto): ?>
+            <div style="border-left: 4px solid var(--success); padding: 15px; color: var(--success);">
+                <i class="fa-solid fa-circle-check"></i>
+                Ya emitiste tu voto en esta asamblea. Solo se permite un voto por usuario.
+                Los resultados se publicarán cuando la directiva cierre la votación.
+            </div>
+        <?php elseif (empty($opciones)): ?>
             <p style="color: var(--text-muted);">Esta asamblea todavía no tiene opciones de votación registradas.</p>
         <?php else: ?>
             <form action="../procesos/voto_process.php" method="POST">
@@ -80,29 +78,24 @@ if (empty($asamblea['activa'])) {
 
                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 25px;">
                     <?php foreach ($opciones as $op): ?>
-                        
-                        <!-- Flexbox interno para alinear el radio button, el icono y los textos -->
-                        <label class="card" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin-bottom: 0; min-width: 220px; max-width: 300px; flex: 1;">
-                            <input type="radio" name="opcion_id" value="<?= (int) $op['id']; ?>" required style="margin-bottom: 15px; transform: scale(1.2);">
+                        <label class="card" style="cursor: pointer; text-align: center; display: block; margin-bottom: 0;">
+                            <input type="radio" name="opcion_id" value="<?= (int) $op['id']; ?>" required style="margin-bottom: 10px;">
                             <div><i class="fa-solid fa-users fa-2x" style="color: var(--secondary-color);"></i></div>
                             <strong style="display: block; margin-top: 10px;">
                                 <?= htmlspecialchars($op['nombre_lista']); ?>
                             </strong>
                             <?php if (!empty($op['descripcion'])): ?>
-                                <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">
+                                <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">
                                     <?= htmlspecialchars($op['descripcion']); ?>
                                 </p>
                             <?php endif; ?>
                         </label>
-                        
                     <?php endforeach; ?>
                 </div>
 
-                <div style="text-align: center;">
-                    <button type="submit" class="btn">
-                        <i class="fa-solid fa-check-to-slot"></i> Emitir Voto
-                    </button>
-                </div>
+                <button type="submit" class="btn">
+                    <i class="fa-solid fa-check-to-slot"></i> Emitir Voto
+                </button>
             </form>
         <?php endif; ?>
 
@@ -127,9 +120,7 @@ if (empty($asamblea['activa'])) {
                         <tr style="border-bottom: 1px solid var(--background-light);">
                             <td style="padding: 10px;"><?= htmlspecialchars($r['nombre_lista']); ?></td>
                             <td style="padding: 10px;"><?= (int) $r['votos']; ?></td>
-                            <td style="padding: 10px;">
-                                <?= $totalVotos > 0 ? round(($r['votos'] / $totalVotos) * 100, 1) : 0; ?>%
-                            </td>
+                            <td style="padding: 10px;"><?= htmlspecialchars($r['porcentaje']); ?>%</td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

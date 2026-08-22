@@ -1,6 +1,7 @@
 <?php
 require_once '../auth/session_check.php';
 require_once '../config/api.php';
+require_once '../includes/permisos.php';
 
 if (!isset($_GET['id'])) {
     header('Location: directorio.php');
@@ -13,6 +14,14 @@ $club = callAPI('GET', "clubes/$id_club/");
 if (isset($club['detail']) && $club['detail'] == 'No encontrado.') {
     header('Location: directorio.php');
     exit();
+}
+
+// Estado del usuario actual respecto a este club
+$perfil    = obtenerPerfil();
+$esDirect  = esDirectivaDe($perfil, $id_club);
+$miRol     = null;
+foreach ($perfil['membresias'] as $m) {
+    if ($m['club_id'] == $id_club) { $miRol = $m['rol']; break; }
 }
 ?>
 
@@ -38,13 +47,31 @@ if (isset($club['detail']) && $club['detail'] == 'No encontrado.') {
             </span>
         </div>
         
-        <!-- Botón de Inscripción Funcional -->
-        <form action="../procesos/membresia_process.php" method="POST" style="margin: 0;">
-            <input type="hidden" name="club_id" value="<?= htmlspecialchars($id_club); ?>">
-            <button type="submit" class="btn" style="background-color: var(--primary-color);">
-                <i class="fa-solid fa-user-plus"></i> Unirse al Club
-            </button>
-        </form>
+        <!-- Acciones contextuales según el rol del usuario en este club -->
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <?php if ($esDirect): ?>
+                <a href="gestionar_miembros.php?club=<?= (int) $id_club; ?>" class="btn">
+                    <i class="fa-solid fa-users-gear"></i> Gestionar integrantes
+                </a>
+            <?php endif; ?>
+
+            <?php if ($miRol === null): ?>
+                <form action="../procesos/membresia_process.php" method="POST" style="margin: 0;">
+                    <input type="hidden" name="club_id" value="<?= htmlspecialchars($id_club); ?>">
+                    <button type="submit" class="btn" style="background-color: var(--primary-color);">
+                        <i class="fa-solid fa-user-plus"></i> Unirse al Club
+                    </button>
+                </form>
+            <?php elseif ($miRol === 'aspirante'): ?>
+                <span style="background-color: #f0ad4e; color: white; padding: 8px 14px; border-radius: 4px; font-size: 14px; font-weight: bold;">
+                    <i class="fa-solid fa-hourglass-half"></i> Solicitud pendiente
+                </span>
+            <?php else: ?>
+                <span style="background-color: var(--success); color: white; padding: 8px 14px; border-radius: 4px; font-size: 14px; font-weight: bold;">
+                    <i class="fa-solid fa-circle-check"></i> Ya eres parte del club
+                </span>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div style="margin-bottom: 20px;">
